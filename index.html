@@ -1,0 +1,231 @@
+<!DOCTYPE html> <!-- Deklarasi HTML5 -->
+<html lang="id"> <!-- Bahasa dokumen: Indonesia -->
+<head>
+  <meta charset="UTF-8" /> <!-- Supaya karakter tampil benar -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/> <!-- Responsif di HP -->
+  <title>Curah Hujan Provinsi DIY 2024</title> <!-- Judul tab browser -->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/> <!-- Utilitas CSS siap pakai -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Pustaka grafik -->
+
+  <style>
+    /* ===== Variabel & dasar halaman ===== */
+    :root { --brand:#013a63; --brand-10:rgba(1,58,99,.10); } /* warna utama */
+    html { scroll-behavior:smooth; } /* scroll halus ke anchor */
+    body{
+      background:#f2f6fb; /* latar lembut */
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; /* font modern */
+      margin:0; /* hilangkan margin default */
+    }
+
+    /* ===== NAVBAR (tetap di atas) ===== */
+    nav{
+      background:linear-gradient(90deg,#012e4f,#014f8b);color:#fff;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:12px 42px;box-shadow:0 3px 10px rgba(0,0,0,.15);
+      position:fixed;width:100%;z-index:999; /* selalu di atas konten */
+    }
+    nav .title{font-weight:700;font-size:20px;letter-spacing:.3px;text-transform:uppercase;} /* judul navbar */
+    nav a{color:#fff;text-decoration:none;margin-left:30px;font-size:17px;font-weight:500;transition:.3s;} /* link menu */
+    nav a:hover{color:#a8d0f0;} /* efek hover */
+
+    /* ===== HERO (bagian pembuka) ===== */
+    .hero{
+      min-height:72vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+      background:linear-gradient(180deg,#02385f 0%,#2e6fa4 55%,#f2f6fb 100%);
+      color:#fff;text-align:center;padding:56px 20px 36px;
+    }
+    .hero img{width:120px;margin-bottom:12px} /* logo DIY */
+    .hero h1{font-size:30px;margin:6px 0 10px;font-weight:700} /* judul besar */
+    .hero p{max-width:720px;margin:0 auto 14px;font-size:16px;color:#e4f0fb;line-height:1.55} /* deskripsi */
+
+    /* ===== Kartu fakta cepat di hero ===== */
+    .facts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px} /* deretan chip */
+    .facts .chip{
+      background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+      border-radius:12px;padding:10px 14px;color:#fff;min-width:165px;text-align:center;
+      box-shadow:0 4px 10px rgba(0,0,0,.08) /* kotak info ringkas */
+    }
+    .facts .chip span{display:block;font-weight:800;font-size:18px} /* angka/teks utama */
+    .facts .chip small{opacity:.96;letter-spacing:.2px} /* label kecil di bawahnya */
+
+    /* ===== Garis pembatas & petunjuk scroll ===== */
+    .hero-divider{width:160px;height:4px;background:rgba(255,255,255,.75);
+      border-radius:3px;margin:14px auto 0}
+    .scroll-tip{margin-top:8px;color:#eaf5ff;font-weight:600;font-size:15px;}
+
+    /* ===== Konten utama (tabel & grafik) ===== */
+    .wrap{max-width:1200px;margin:auto;margin-top:80px;} /* tengah + ruang karena navbar fixed */
+    h2,h3{color:#013a63;} /* warna judul seksi */
+    th,td{text-align:center;} /* sel tabel rata tengah */
+    .thead-brand{background:#013a63!important;color:#fff;} /* header tabel biru tua */
+    .card{box-shadow:0 6px 18px rgba(1,58,99,.12);} /* efek kartu */
+    td.avg{font-weight:600;background:rgba(1,58,99,.05);} /* kolom rata-rata dibedakan */
+    .info{border-left:4px solid #013a63;background:#e7f2ff;border-radius:6px;padding:12px 14px;margin-top:16px;} /* kotak keterangan */
+
+    /* ===== Footer ===== */
+    footer{background:#013a63;color:#fff;text-align:center;padding:16px;margin-top:28px;line-height:1.6;}
+  </style>
+</head>
+<body>
+
+  <!-- ===== Navbar: judul & tautan ke bagian halaman ===== -->
+  <nav>
+    <div class="title">Curah Hujan Provinsi DIY 2024</div>
+    <div>
+      <a href="#home">Beranda</a> <!-- ke hero -->
+      <a href="#tabel">Tabel</a>  <!-- ke tabel -->
+      <a href="#grafik">Grafik</a> <!-- ke grafik -->
+    </div>
+  </nav>
+
+  <!-- ===== HERO (logo + judul + deskripsi + kartu fakta) ===== -->
+  <section id="home" class="hero">
+    <img src="https://kompaspedia.kompas.id/wp-content/uploads/2020/07/LOGO_3400_DI-YOGYAKARTA_thumb.png"
+         alt="Logo DIY"
+         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/3/39/Lambang_Daerah_Istimewa_Yogyakarta.png';"> <!-- fallback logo -->
+    <h1>Curah Hujan Bulanan – DIY 2024</h1>
+    <p>Data curah hujan bulanan dari BPS DIY untuk lima kabupaten/kota. 
+       Puncak hujan umumnya terjadi pada awal tahun, sementara periode kering terjadi di pertengahan tahun.</p>
+
+    <!-- Tiga kartu fakta (diisi otomatis oleh JS) -->
+    <div class="facts">
+      <div class="chip"><span id="avgProv">—</span><small>Rata-rata Provinsi (mm/bln)</small></div>
+      <div class="chip"><span id="wettest">—</span><small>Bulan Terbasah</small></div>
+      <div class="chip"><span id="driest">—</span><small>Bulan Terkering</small></div>
+    </div>
+
+    <div class="hero-divider"></div> <!-- garis tipis pemisah -->
+  </section>
+
+  <div class="wrap">
+    <!-- ===== Bagian Tabel ===== -->
+    <section id="tabel" class="w3-container w3-padding-24">
+      <h2 class="w3-center w3-margin-bottom">Tabel Curah Hujan Bulanan (mm)</h2>
+
+      <div class="w3-responsive"> <!-- tabel bisa discroll di layar kecil -->
+        <table class="w3-table w3-bordered w3-white w3-card card">
+          <thead class="thead-brand">
+            <tr>
+              <th>Wilayah Kabupaten/Kota</th>
+              <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mei</th><th>Jun</th>
+              <th>Jul</th><th>Agu</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Des</th><th>Rata-rata</th>
+            </tr>
+          </thead>
+          <tbody id="tabelBody"></tbody> <!-- isi baris dibuat oleh JS -->
+        </table>
+      </div>
+
+      <!-- Kotak keterangan sumber data -->
+      <div class="info">
+        <p style="color:#0b2545;line-height:1.6;margin:0;">
+          <strong>Keterangan Data:</strong><br>
+          <em>Sumber: Badan Pusat Statistik Provinsi Daerah Istimewa Yogyakarta (BPS DIY)</em><br>
+          <a href="https://yogyakarta.bps.go.id/id/statistics-table/2/MTUyIzI=/curah-hujan-per-bulan.html"
+             target="_blank" rel="noopener noreferrer" style="color:#013a63;text-decoration:underline;">
+             Lihat Data Resmi di BPS DIY
+          </a><br>
+          <span style="color:#013a63;font-weight:600;">Terakhir Diperbarui: 3 September 2025</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Bagian Grafik ===== -->
+    <section id="grafik" class="w3-container w3-padding-24 w3-light-grey">
+      <h2 class="w3-center w3-margin-bottom">Grafik Curah Hujan Bulanan (mm)</h2>
+      <div class="w3-card w3-white card w3-padding">
+        <canvas id="chartKab" style="max-width:1100px;margin:auto;display:block;height:440px"></canvas> <!-- kanvas Chart.js -->
+      </div>
+      <div class="info">
+        <p style="color:#0b2545;line-height:1.6;margin:0;">
+          <strong>Keterangan:</strong><br>
+          Batang berwarna menunjukkan nilai curah hujan tiap kabupaten/kota pada bulan terkait.
+          Arahkan kursor ke grafik untuk melihat nilai curah hujan.<br>
+          <strong>Referensi:</strong>
+          <a href="https://yogyakarta.bps.go.id/id/statistics-table/2/MTUyIzI=/curah-hujan-per-bulan.html"
+             target="_blank" rel="noopener noreferrer" style="color:#013a63;text-decoration:underline;">
+             BPS Provinsi DIY
+          </a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    © 2025 · Laboratorium Sistem Informasi Geografis, Fakultas Geografi Universitas Gadjah Mada
+  </footer>
+
+  <script>
+    /* ===== Data & label ===== */
+    const labels = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]; // nama bulan
+    const data = { // curah hujan (mm) per kab/kota untuk 12 bulan
+      "Kulon Progo":[405,147,76,56,12,4,6,3,5,29.6,257.7,422.5],
+      "Bantul":[517.2,288,247.3,136.5,70.5,7.5,15,0,26,8.5,400,587],
+      "Gunungkidul":[473.4,389.5,291.6,342.4,25.5,27,13,0,53,30,382,442.5],
+      "Sleman":[657.5,332.5,273.5,452.7,29,52.6,25,0,55,57,557,566.7],
+      "Kota Yogyakarta":[498,235,210,113,13,12,14,0,32,35,439,380]
+    };
+
+    /* ===== Hitung ringkasan provinsi ===== */
+    const kab = Object.keys(data); // daftar kab/kota
+    const monthlyAvg = labels.map((_,i)=>kab.reduce((a,k)=>a+data[k][i],0)/kab.length); // rata-rata per bulan (lintas kab/kota)
+    const idxMax = monthlyAvg.indexOf(Math.max(...monthlyAvg)); // indeks bulan terbasah
+    const idxMin = monthlyAvg.indexOf(Math.min(...monthlyAvg)); // indeks bulan terkering
+    const avgProv = monthlyAvg.reduce((a,b)=>a+b,0)/monthlyAvg.length; // rata-rata keseluruhan provinsi
+    const fmt = n=>n.toLocaleString('id-ID',{maximumFractionDigits:1}); // format angka (1 desimal)
+
+    /* ===== Tampilkan ke kartu fakta di hero ===== */
+    document.getElementById('avgProv').textContent=fmt(avgProv); // rata-rata provinsi (mm/bln)
+    document.getElementById('wettest').textContent=`${labels[idxMax]} (${fmt(monthlyAvg[idxMax])})`; // bulan terbasah
+    document.getElementById('driest').textContent=`${labels[idxMin]} (${fmt(monthlyAvg[idxMin])})`; // bulan terkering
+
+    /* ===== Bangun isi tabel dinamis ===== */
+    const tbody=document.getElementById('tabelBody');
+    kab.forEach(k=>{
+      const arr=data[k],tr=document.createElement('tr'); // buat baris baru
+      tr.innerHTML=`<td>${k}</td>`+arr.map(v=>`<td>${fmt(v)}</td>`).join(''); // 12 sel bulan
+      const avg=arr.reduce((a,b)=>a+b,0)/arr.length; // rata-rata baris kab/kota
+      tr.innerHTML+=`<td class='avg'>${fmt(avg)} mm</td>`; // kolom rata-rata
+      tbody.appendChild(tr); // masukkan ke tabel
+    });
+
+    /* ===== Gambar grafik batang (Chart.js) ===== */
+    const op=[.3,.45,.6,.8,.95]; // variasi opasitas untuk beda seri
+    new Chart(document.getElementById("chartKab"),{
+      type:"bar",
+      data:{
+        labels,
+        datasets:kab.map((k,i)=>({
+          label:k,
+          data:data[k],
+          backgroundColor:`rgba(1,58,99,${op[i]})`, /* biru brand dengan opasitas berbeda */
+          borderColor:"#013a63",
+          borderWidth:1
+        }))
+      },
+      options:{
+        maintainAspectRatio:false,responsive:true, /* agar tinggi 440px dipakai */
+        plugins:{
+          legend:{display:false}, /* sembunyikan legenda (opsional) */
+          title:{display:true,text:"Curah Hujan Bulanan per Kabupaten/Kota – DIY (2024)",color:"#013a63"},
+          tooltip:{
+            backgroundColor:"#013a63",titleColor:"#fff",bodyColor:"#fff",
+            callbacks:{
+              title:c=>"Bulan "+c[0].label, // judul tooltip = nama bulan
+              label:c=>`${c.dataset.label}: ${c.parsed.y.toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2})} mm` // nilai detail
+            }
+          }
+        },
+        scales:{
+          x:{ticks:{color:"#013a63"},grid:{color:"transparent"}}, // grid X disembunyikan
+          y:{
+            beginAtZero:true,ticks:{color:"#013a63"},
+            grid:{color:"var(--brand-10)"}, /* grid tipis */
+            title:{display:true,text:"mm/bulan",color:"#013a63"} /* label sumbu Y */
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
